@@ -1,30 +1,14 @@
-import {
-	Links,
-	LiveReload,
-	Meta,
-	Outlet,
-	Scripts,
-	ScrollRestoration,
-} from "@remix-run/react";
-import styles from "./tailwind.css";
-
-export const meta = () => ({
-	charset: "utf-8",
-	title: "New Remix App",
-	viewport: "width=device-width,initial-scale=1",
-});
+import { Outlet, LiveReload } from "@remix-run/react";
 
 export default function App() {
 	return (
 		<html lang="en">
 			<head>
-				<Meta />
-				<Links />
+				<meta charSet="utf-8" />
+				<title>SnippetCloud</title>
 			</head>
 			<body>
 				<Outlet />
-				<ScrollRestoration />
-				<Scripts />
 				<LiveReload />
 			</body>
 		</html>
