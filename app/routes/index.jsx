@@ -1,18 +1,5 @@
-import { Link } from "@remix-run/react";
+import { redirect } from "@remix-run/node";
 
-export default function Index() {
-	return (
-		<div className="container">
-			<div className="content">
-				<h1>SnippetCloud!!</h1>
-				<nav>
-					<ul>
-						<li>
-							<Link to="snippets">Check Snippets</Link>
-						</li>
-					</ul>
-				</nav>
-			</div>
-		</div>
-	);
+export function loader() {
+	return redirect("/snippets");
 }

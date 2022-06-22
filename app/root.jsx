@@ -11,7 +11,7 @@ export default function App() {
 				<Links />
 				<title>SnippetCloud</title>
 			</head>
-			<body>
+			<body className="h-full">
 				<Outlet />
 				<LiveReload />
 			</body>

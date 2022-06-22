@@ -22,7 +22,35 @@
         "favorite": true
       },
       {
-        "title": "Remix loader",
+        "title": "Remix uploader",
+        "programmingLanguage": "JavaScript",
+        "code": "export function loader({ request, params }) {}",
+        "description": "To load data required to render the page.",
+        "favorite": true
+      },
+      {
+        "title": "Remix offloader",
+        "programmingLanguage": "JavaScript",
+        "code": "export function loader({ request, params }) {}",
+        "description": "To load data required to render the page.",
+        "favorite": false
+      },
+      {
+        "title": "Remix reloader",
+        "programmingLanguage": "JavaScript",
+        "code": "export function loader({ request, params }) {}",
+        "description": "To load data required to render the page.",
+        "favorite": true
+      },
+      {
+        "title": "Remix unloader",
+        "programmingLanguage": "JavaScript",
+        "code": "export function loader({ request, params }) {}",
+        "description": "To load data required to render the page.",
+        "favorite": true
+      },
+      {
+        "title": "Remix preloader",
         "programmingLanguage": "JavaScript",
         "code": "export function loader({ request, params }) {}",
         "description": "To load data required to render the page.",
