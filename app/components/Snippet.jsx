@@ -20,7 +20,9 @@ export default function Snippet({ snippet }) {
 						{snippet.programmingLanguage}
 					</span>
 					<p className="text-zinc-600">{snippet.description}</p>
-					<p className="text-zinc-400">{snippet.createdAt}</p>
+					<p className="text-zinc-400">
+						{new Date(snippet.updatedAt).toLocaleDateString()}
+					</p>
 				</div>
 				<div className="flex justify-between">
 					<svg

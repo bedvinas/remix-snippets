@@ -71,7 +71,7 @@ export default function Snippets() {
 						<input
 							type="text"
 							name="search"
-							className=" border border-zinc-400  text-zinc-900 sm:text-sm focus:outline-none focus:border-black focus:ring-1 block w-full pl-10 p-1"
+							className=" border border-zinc-400  text-zinc-900 sm:text-sm focus:outline-none focus:border-black focus:ring-1 block w-full pl-10 p-1 rounded-none"
 							placeholder="Search"
 						/>
 					</div>
@@ -87,7 +87,7 @@ export default function Snippets() {
 						<input name="search" defaultValue={""} hidden />
 						<select
 							name="sort"
-							className=" border border-zinc-400 text-zinc-900 text-sm block w-full p-1"
+							className="border border-zinc-400 bg-white text-zinc-900 text-sm block w-full p-1 rounded-none"
 							defaultValue={"createdAt"}
 						>
 							<option readOnly="title">Title</option>
@@ -181,9 +181,7 @@ export default function Snippets() {
 				</div>
 			</div>
 			<div className="flex-auto w-7/12 bg-zinc-200">
-				<h2>
-					<Outlet></Outlet>
-				</h2>
+				<Outlet></Outlet>
 			</div>
 		</div>
 	);

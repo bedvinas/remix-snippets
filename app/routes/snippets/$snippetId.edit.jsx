@@ -1,18 +1,30 @@
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import { useState } from "react";
-
 import connectDb from "~/db/connectDb.server";
 
-export async function action({ request }) {
+export async function loader({ params }) {
+	const db = await connectDb();
+	const snippet = await db.models.Snippet.findById(params.snippetId);
+	if (!snippet) {
+		throw new Response("Not Found", {
+			status: 404,
+		});
+	}
+	return json(snippet);
+}
+
+export async function action({ request, params }) {
 	const formData = await request.formData();
 	const db = await connectDb();
-	const formValues = Object.fromEntries(formData);
 	try {
-		const newSnippet = await db.models.Snippet.create({
-			...formValues,
-		});
-		return redirect(`/snippets/${newSnippet._id}`);
+		let isFavorite = formData.get("favorite") === "on" ? true : false;
+		formData.set("favorite", `${isFavorite}`);
+		await db.models.Snippet.findByIdAndUpdate(
+			params.snippetId,
+			Object.fromEntries(formData)
+		);
+		return redirect(`/snippets/${params.snippetId}`);
 	} catch (error) {
 		return json(
 			{ errors: error.errors, values: Object.fromEntries(formData) },
@@ -21,8 +33,11 @@ export async function action({ request }) {
 	}
 }
 
-export default function NewSnippet() {
-	const [isChecked, setIsChecked] = useState(false);
+export default function SnippetIdEdit() {
+	let snippet = useLoaderData();
+	console.log(snippet.favorite);
+	let [isChecked, setIsChecked] = useState(snippet.favorite);
+
 	return (
 		<div className="flex flex-col my-4 mx-10">
 			<Form method="post">
@@ -34,6 +49,7 @@ export default function NewSnippet() {
 						Title
 					</label>
 					<input
+						defaultValue={snippet.title}
 						name="title"
 						type="text"
 						className="bg-zinc-100 border border-zinc-300 text-zinc-900 text-sm p-2 md:w-1/3"
@@ -49,6 +65,7 @@ export default function NewSnippet() {
 					</label>
 					<textarea
 						name="description"
+						defaultValue={snippet.description}
 						rows="5"
 						className="block p-2 w-full text-sm text-zinc-900 bg-zinc-100 border border-zinc-300 md:w-1/2"
 					></textarea>
@@ -61,6 +78,7 @@ export default function NewSnippet() {
 						Programming language
 					</label>
 					<select
+						defaultValue={snippet.programmingLanguage}
 						name="programmingLanguage"
 						className="bg-zinc-100 text-zinc-900 text-sm block md:w-1/3 p-1 rounded-none"
 					>
@@ -78,6 +96,7 @@ export default function NewSnippet() {
 				</div>
 				<div className="flex mb-2">
 					<input
+						key={snippet._id}
 						name="favorite"
 						type="checkbox"
 						checked={isChecked}
@@ -114,7 +133,7 @@ export default function NewSnippet() {
 						Snippet
 					</label>
 					<textarea
-						name="code"
+						defaultValue={snippet.code}
 						rows="18"
 						className="block p-2.5 w-full text-sm text-gray-900 bg-zinc-100 border border-gray-300"
 					></textarea>

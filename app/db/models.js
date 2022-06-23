@@ -16,7 +16,6 @@ const snippetSchema = new Schema(
     programmingLanguage: {
       type: String,
       required: true,
-      enum: ["HTML", "CSS", "JavaScript"],
     },
     code: {
       type: String,
@@ -26,10 +25,6 @@ const snippetSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
     },
   },
   { timestamps: true }
