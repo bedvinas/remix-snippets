@@ -5,11 +5,12 @@ import {
 	useLoaderData,
 	useSearchParams,
 	useSubmit,
+	useFetcher,
 } from "@remix-run/react";
 import connectDb from "~/db/connectDb.server.js";
 import Snippet from "../components/Snippet";
 
-const DEFAULT_SORT_FIELD = "updatedAt";
+const DEFAULT_SORT_FIELD = "favorite";
 
 export async function loader({ request }) {
 	const url = new URL(request.url);
@@ -22,16 +23,31 @@ export async function loader({ request }) {
 	return snippets;
 }
 
+export async function action({ request }) {
+	const formData = await request.formData();
+	const db = await connectDb();
+	const query = await db.models.Snippet.find({ title: formData.get("search") });
+	const snippets = await loader();
+
+	return snippets.filter(() => query[0].title);
+}
+
 export default function Snippets() {
 	const snippets = useLoaderData();
 	const submit = useSubmit();
+	const fetcher = useFetcher();
 
 	const [searchParams] = useSearchParams();
-	const search = searchParams.get("search");
+	let sort = searchParams.get("sort") ?? DEFAULT_SORT_FIELD;
 
 	function handleChange(event) {
 		submit(event.currentTarget, { replace: true });
 	}
+
+	// const handleSelect = (selectedValue) => {
+	// 	// programmatically submit a useFetcher form in Remix
+	// 	fetcher.submit({ sort: selectedValue }, { method: "get", action: "/" });
+	// };
 
 	return (
 		<div className="flex min-h-screen">
@@ -52,50 +68,55 @@ export default function Snippets() {
 					</span>
 					<h1 className="m-3 text-2xl font-bold">SnippetCloud</h1>
 				</Link>
+
 				<div className="m-2">
-					<div className="relative mb-2">
-						<div className="absolute inset-y-0 left-0 flex items-center pl-3">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="h-5 w-5"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-							>
-								<path
-									fillRule="evenodd"
-									d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-									clipRule="evenodd"
-								/>
-							</svg>
+					<fetcher.Form method="get" className="">
+						<div className="relative mb-2">
+							<div className="absolute inset-y-0 left-0 flex items-center pl-3">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									className="h-5 w-5"
+									viewBox="0 0 20 20"
+									fill="currentColor"
+								>
+									<path
+										fillRule="evenodd"
+										d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+										clipRule="evenodd"
+									/>
+								</svg>
+							</div>
+							<input
+								type="text"
+								name="search"
+								className=" border border-zinc-400  text-zinc-900 sm:text-sm focus:outline-none focus:border-black focus:ring-1 block w-full pl-10 p-1 rounded-none"
+								placeholder="Search"
+							/>
 						</div>
-						<input
-							type="text"
-							name="search"
-							className=" border border-zinc-400  text-zinc-900 sm:text-sm focus:outline-none focus:border-black focus:ring-1 block w-full pl-10 p-1 rounded-none"
-							placeholder="Search"
-						/>
-					</div>
-					<Form
-						action="sort"
-						method="get"
-						className="mb-3"
-						onChange={handleChange}
-					>
+
 						<label className="block text-sm font-medium text-gray-900">
 							Sort by:
 						</label>
-						<input name="search" defaultValue={""} hidden />
 						<select
+							onChange={() => fetcher.submit()}
 							name="sort"
-							className="border border-zinc-400 bg-white text-zinc-900 text-sm block w-full p-1 rounded-none"
-							defaultValue={"createdAt"}
+							className="mb-2 border border-zinc-400 bg-white text-zinc-900 text-sm block w-full p-1 rounded-none"
+							value={sort}
 						>
-							<option readOnly="title">Title</option>
-							<option readOnly="favorite">Favorite</option>
-							<option readOnly="createdAt">Created</option>
-							<option readOnly="updatedAt">Updated</option>
+							<option defaultValue={"title"} label="Title">
+								title
+							</option>
+							<option defaultValue={"favorite"} label="Favorite">
+								favorite
+							</option>
+							<option defaultValue={"createdAt"} label="Created">
+								craetedAt
+							</option>
+							<option defaultValue={"updatedAt"} label="Updated">
+								updatedAt
+							</option>
 						</select>
-					</Form>
+					</fetcher.Form>
 					<Link
 						to="/snippets/new"
 						className="flex w-full justify-center items-center space- border-2 p-1 border-zinc-600 rounded-none mb-4 hover:bg-zinc-800 hover:text-white"
