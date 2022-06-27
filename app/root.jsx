@@ -1,7 +1,10 @@
 import { Links, Outlet, LiveReload } from "@remix-run/react";
 import styles from "./styles/tailwind.css";
 
-export const links = () => [{ rel: "stylesheet", href: styles }];
+export const links = () => [
+	{ rel: "stylesheet", href: styles },
+	{ rel: "manifest", href: "/manifest.webmanifest" },
+];
 
 export default function App() {
 	return (
