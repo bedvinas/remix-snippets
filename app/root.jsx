@@ -1,9 +1,9 @@
-import { Links, Outlet, LiveReload } from "@remix-run/react";
+import { Links, Outlet, LiveReload, Scripts } from "@remix-run/react";
 import styles from "./styles/tailwind.css";
 
 export const links = () => [
 	{ rel: "stylesheet", href: styles },
-	{ rel: "manifest", href: "/manifest.webmanifest" },
+	{ rel: "manifest", href: "/manifest.json" },
 ];
 
 export default function App() {
@@ -17,6 +17,7 @@ export default function App() {
 			<body className="h-full">
 				<Outlet />
 				<LiveReload />
+				<Scripts />
 			</body>
 		</html>
 	);
