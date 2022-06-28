@@ -1,64 +1,37 @@
-const version = "0.0.1";
-const staticCache = `static-${version}`;
-const dynamicCache = `dynamic-${version}`;
-
 self.addEventListener("install", (e) => {
-  console.log("SW 'install' event");
-  e.waitUntil(
-    caches.open(staticCache).then((cache) => {
-      return cache.addAll(["/build/_assets/"]);
-    })
-  );
+  console.log("log from sw: install event");
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("SW 'activate' event");
+  console.log("log from sw: 'activate' event");
   event.waitUntil(self.clients.claim());
 });
 
-// self.addEventListener("fetch", (event) => {
-//   if (event.request.method.toLowerCase() !== "get") {
-//     return;
-//   }
-
-//   event.respondWith(
-//     caches
-//       .open(staticCache)
-//       .then((cache) => cache.match(event.request, { ignoreSearch: false }))
-//       .then((response) => {
-//         return response || fetch(event.request);
-//       })
-//   );
-// });
-
 self.addEventListener("fetch", (event) => {
-  let url = event.request.url;
-  let method = event.request.method;
+  let request = event.request;
+  let url = request.url;
+  let method = request.method;
+  let headers = request.headers;
 
   // Ignore requests other than 'get'
   if (method.toLowerCase() !== "get" || !url.startsWith("http")) {
     return;
   }
-
-  caches.open(dynamicCache).then((cache) => {
-    cache.add(event.request);
-  });
+  //
+  if (url.includes('.png') || url.includes('.css')) {
+     return event.respondWith(cacheFallbackToNetworkPutInCache(request));
+  }
 
   event.respondWith(networkFallbackToCache(event));
 });
 
-// Advanced caching version
-// self.addEventListener('fetch', (event) => {
-//   if (event.request.method.toLowerCase() !== "get") {
-//     return;
-//   }
 
-//   event.respondWith(
-//     caches.open(dynamicCache).then((cache) => {
-//       return cache.match()
-//     })
-//   );
-// });
+//------- Helpers
+
+const putInCache = async (request, response) => {
+  const cache = await caches.open("v1");
+  await cache.put(request, response);
+};
 
 //------- Strategies
 
@@ -70,3 +43,13 @@ async function networkFallbackToCache(event) {
     return caches.match(event.request);
   });
 }
+
+async function cacheFallbackToNetworkPutInCache(request) {
+  const responseFromCache = await caches.match(request);
+  if (responseFromCache) {
+    return responseFromCache;
+  }
+  const responseFromNetwork = await fetch(request);
+  putInCache(request, responseFromNetwork.clone())
+  return responseFromNetwork;
+};

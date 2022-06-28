@@ -1,9 +1,9 @@
 {
     "theme_color": "#000000",
     "background_color": "#ffff",
-    "display": "standalone",
-    "scope": "/snippets",
-    "start_url": "/snippets",
+    "display": "fullScreen",
+    "scope": "/",
+    "start_url": "/",
     "name": "SnippetCloud",
     "short_name": "SnippetCloud",
     "description": "A snippet saver",
